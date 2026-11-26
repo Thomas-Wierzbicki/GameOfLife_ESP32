@@ -6,7 +6,13 @@
 
 // Set where to find the board
 #ifdef DIYMORE_LORA_V4
+constexpr int displayPowerPin = 36;
+constexpr int displayResetPin = 21;
 SSD1306 display(0x3c, 17, 18);
+#elif defined(LIFE_HELTEC_V2)
+constexpr int displayPowerPin = 21;
+constexpr int displayResetPin = 16;
+SSD1306 display(0x3c, 4, 15);
 #else
 SSD1306  display(0x3c, 21, 22); // Specify pins display is connected to, might have to change address
 #endif
@@ -36,14 +42,14 @@ void makeNewBoard();
 // Runs when powering on
 void setup(){
   // Init the display
-#ifdef DIYMORE_LORA_V4
-  pinMode(36, OUTPUT);
-  digitalWrite(36, LOW); // Heltec-compatible V4 Vext supply
+#if defined(DIYMORE_LORA_V4) || defined(LIFE_HELTEC_V2)
+  pinMode(displayPowerPin, OUTPUT);
+  digitalWrite(displayPowerPin, LOW); // Enable Vext
   delay(50);
-  pinMode(21, OUTPUT);
-  digitalWrite(21, LOW);
+  pinMode(displayResetPin, OUTPUT);
+  digitalWrite(displayResetPin, LOW);
   delay(10);
-  digitalWrite(21, HIGH);
+  digitalWrite(displayResetPin, HIGH);
   delay(50);
 #endif
   qrcode.init();
