@@ -11,8 +11,13 @@
 #include "life_grid.h"
 #endif
 
+#ifdef LIFE_HELTEC_V2
+static SSD1306 oled(0x3c, 4, 15);
+static SX1276 radio = new Module(18, 26, 14, 35);
+#else
 static SSD1306 oled(0x3c, 21, 22);
 static SX1276 radio = new Module(18, 26, 23, RADIOLIB_NC);
+#endif
 static void message(const String &s) {
   oled.clear();
   oled.drawString(0, 24, s);
@@ -116,6 +121,16 @@ void setup() {
   pinMode(0, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(0), buttonDown, FALLING);
   Serial.begin(115200);
+#ifdef LIFE_HELTEC_V2
+  pinMode(21, OUTPUT);
+  digitalWrite(21, LOW);  // Vext on
+  delay(50);
+  pinMode(16, OUTPUT);
+  digitalWrite(16, LOW);
+  delay(10);
+  digitalWrite(16, HIGH);
+  delay(50);
+#endif
   oled.init();
   oled.flipScreenVertically();
   SPI.begin(5, 19, 27, 18);
